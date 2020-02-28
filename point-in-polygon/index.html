@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GeoUtils示例</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=FF522e1b9026e3930dc59db7c897f2f6"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils.js"></script>
+    <style type="text/css">
+    table {
+        font-size: 14px;
+    }
+    </style>
+</head>
+
+<body>
+    <div style="float:left;width:600px;height:500px;border:1px solid gray" id="container"></div>
+    <div style="float:left;width:300px;height:500px;border:1px solid gray" id="control">
+        <table style="width:100%;">
+            <tr>
+                <td colspan="2">判断点是否在多边形内:</td>
+            </tr>
+            <tr>
+                <td><input type="button" value="多边形1" onclick="polygon1()" /></td>
+            </tr>
+            <tr>
+                <td><input type="button" value="多边形2" onclick="polygon2()" /></td>
+            </tr>
+            <tr>
+                <td>经度<input type="text" value="" id="lng"></td>
+            </tr>
+            <tr>
+                <td>纬度<input type="text" value="" id="lat"></td>
+            </tr>
+            <tr>
+                <td>经纬度<input type="text" value="" id="lnglat"></td>
+            </tr>
+            <tr>
+                <td>结果：</td>
+            </tr>
+            <tr>
+                <td><p id="result" style="color:red"></p></td>
+            </tr>
+        <table>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+    var map = new BMap.Map("container");
+    var pt = new BMap.Point(116.404, 39.915);
+    var mkr = new BMap.Marker(pt);
+    var ply;  //多边形
+    map.centerAndZoom(pt, 16);
+    map.enableScrollWheelZoom(); //开启滚动缩放
+    map.enableContinuousZoom(); //开启缩放平滑
+
+    //初始化为多边形1
+    polygon1();
+
+    //生成多边形1
+    function polygon1() {
+        var pts = [];
+        var pt1 = new BMap.Point(116.395, 39.910);
+        var pt2 = new BMap.Point(116.394, 39.914);
+        var pt3 = new BMap.Point(116.403, 39.920);
+        var pt4 = new BMap.Point(116.402, 39.914);
+        var pt5 = new BMap.Point(116.410, 39.913);
+        pts.push(pt1);
+        pts.push(pt2);
+        pts.push(pt3);
+        pts.push(pt4);
+        pts.push(pt5);
+        ply = new BMap.Polygon(pts);
+
+        //演示：将面添加到地图上
+        map.clearOverlays();
+        map.addOverlay(ply);
+    }
+
+    //生成多边形2
+    function polygon2() {
+        var pts = [];
+        var pt1 = new BMap.Point(116.395, 39.910);
+        var pt2 = new BMap.Point(116.394, 39.914);
+        var pt3 = new BMap.Point(116.396, 39.919);
+        var pt4 = new BMap.Point(116.406, 39.920);
+        var pt5 = new BMap.Point(116.410, 39.913);
+        pts.push(pt1);
+        pts.push(pt2);
+        pts.push(pt3);
+        pts.push(pt4);
+        pts.push(pt5);
+        ply = new BMap.Polygon(pts);
+        
+        //演示：将多边形添加到地图上
+        map.clearOverlays();
+        map.addOverlay(ply);
+    }
+
+    map.addEventListener("click", function (e) {
+        mkr.setPosition(e.point);
+        map.addOverlay(mkr);
+        //将点击的点的坐标显示在页面上
+        document.getElementById("lng").value = e.point.lng;
+        document.getElementById("lat").value = e.point.lat;
+        document.getElementById("lnglat").value = e.point.lng + ',' + e.point.lat;
+
+        InOrOutPolygon(e.point.lng, e.point.lat);
+    });
+
+    function InOrOutPolygon(lng, lat){
+        var pt = new BMap.Point(lng, lat);
+        var result = BMapLib.GeoUtils.isPointInPolygon(pt, ply);
+        if (result == true) {
+            document.getElementById("result").innerHTML = "点在多边形内";
+        } else {
+            document.getElementById("result").innerHTML = "点在多边形外";
+        }
+    }
+
+</script>
